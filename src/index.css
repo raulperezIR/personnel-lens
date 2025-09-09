@@ -8,51 +8,66 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Custom B2B Intranet Design System */
+    --background: 210 20% 98%;
+    --foreground: 222 84% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 84% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222 84% 11%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary Colors - Exact Brand Colors */
+    --primary: 230 100% 58%; /* #2D5BFF */
+    --primary-600: 230 81% 46%; /* #1E43CC */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Neutral Scale - Exact Specifications */
+    --neutral-900: 222 47% 11%; /* #0F172A */
+    --neutral-700: 215 25% 27%; /* #334155 */
+    --neutral-200: 220 13% 91%; /* #E5E7EB */
+    --neutral-50: 210 20% 98%; /* #F8FAFC */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* State Colors - Exact Specifications */
+    --success: 142 76% 36%; /* #16A34A */
+    --warning: 38 92% 50%; /* #F59E0B */
+    --danger: 0 84% 60%; /* #EF4444 */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Semantic Mappings */
+    --secondary: var(--neutral-200);
+    --secondary-foreground: var(--neutral-900);
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --muted: var(--neutral-50);
+    --muted-foreground: var(--neutral-700);
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --accent: var(--neutral-50);
+    --accent-foreground: var(--neutral-900);
+
+    --destructive: var(--danger);
+    --destructive-foreground: 0 0% 100%;
+
+    --border: var(--neutral-200);
+    --input: var(--neutral-200);
+    --ring: var(--primary);
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Custom Design System Extensions */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-600)));
+    --shadow-card: 0 1px 3px 0 hsl(var(--neutral-900) / 0.1), 0 1px 2px -1px hsl(var(--neutral-900) / 0.1);
+    --shadow-elevated: 0 10px 15px -3px hsl(var(--neutral-900) / 0.1), 0 4px 6px -4px hsl(var(--neutral-900) / 0.1);
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar Colors */
+    --sidebar-background: var(--neutral-50);
+    --sidebar-foreground: var(--neutral-700);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: var(--neutral-200);
+    --sidebar-accent-foreground: var(--neutral-900);
+    --sidebar-border: var(--neutral-200);
+    --sidebar-ring: var(--primary);
   }
 
   .dark {
@@ -95,11 +110,7 @@ All colors MUST be HSL.
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }
