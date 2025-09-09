@@ -11,14 +11,14 @@ import {
   Menu,
   Bell
 } from "lucide-react";
-import EmployeesTable from "@/components/EmployeesTable";
+import ClientsTable from "@/components/ClientsTable";
 
 const Employees = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const sidebarItems = [
     { icon: LayoutDashboard, label: "Dashboard", active: false },
-    { icon: Users, label: "Empleados", active: true },
+    { icon: Users, label: "Clientes", active: true },
     { icon: Clock, label: "Control Tiempos", active: false },
     { icon: FileText, label: "Informes", active: false },
     { icon: Settings, label: "Configuración", active: false },
@@ -116,7 +116,7 @@ const Employees = () => {
 
         {/* Content */}
         <main className="flex-1 p-6 overflow-auto">
-          <EmployeesTable />
+          <ClientsTable />
         </main>
       </div>
     </div>
