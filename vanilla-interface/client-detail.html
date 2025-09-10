@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Cliente - ERP Clientes</title>
+    <meta name="description" content="Sistema de gestión de clientes y CRM para intranet B2B">
+
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Local Utilities -->
+    <script src="js/utils.js"></script>
+</head>
+<body>
+    <div class="min-h-screen bg-neutral-50 flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-card border-r border-neutral-200 transition-all duration-300">
+            <div class="p-4">
+                <div class="flex items-center gap-2 mb-8">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center" style="flex-shrink: 0;">
+                        <span class="text-primary-foreground font-semibold text-sm">CT</span>
+                    </div>
+                    <div class="sidebar-text">
+                        <h1 class="text-lg font-semibold text-primary">ERP Clientes</h1>
+                        <p class="text-xs text-neutral-700">Sistema de gestión</p>
+                    </div>
+                </div>
+                
+                <nav class="space-y-2">
+                    <button class="nav-item" onclick="window.location.href='clients.html'">
+                        <i data-lucide="users" class="nav-icon"></i>
+                        <span class="sidebar-text">Clientes</span>
+                    </button>
+                    <button class="nav-item" data-page="employees">
+                        <i data-lucide="user-check" class="nav-icon"></i>
+                        <span class="sidebar-text">Empleados</span>
+                    </button>
+                    <button class="nav-item" data-page="reports">
+                        <i data-lucide="bar-chart-3" class="nav-icon"></i>
+                        <span class="sidebar-text">Reportes</span>
+                    </button>
+                    <button class="nav-item" data-page="settings">
+                        <i data-lucide="settings" class="nav-icon"></i>
+                        <span class="sidebar-text">Configuración</span>
+                    </button>
+                </nav>
+                
+                <div class="absolute bottom-4 left-4 right-4">
+                    <button class="nav-item" id="logoutBtn">
+                        <i data-lucide="log-out" class="nav-icon"></i>
+                        <span class="sidebar-text">Cerrar Sesión</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Header -->
+            <header class="bg-card border-b border-neutral-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <button id="sidebarToggle" class="btn btn-ghost btn-sm text-neutral-700">
+                            <i data-lucide="menu" class="w-5 h-5"></i>
+                        </button>
+                        <nav class="text-sm text-neutral-700">
+                            <a href="clients.html" class="text-primary hover:underline">Clientes</a>
+                            <span class="mx-2">/</span>
+                            <span id="clientNameBreadcrumb">Detalle Cliente</span>
+                        </nav>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <div id="clientStatusBadge"></div>
+                        <button class="btn btn-ghost btn-sm">
+                            <i data-lucide="bell" class="w-5 h-5 text-neutral-700"></i>
+                        </button>
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-primary-10 flex items-center justify-center">
+                                <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+                            </div>
+                            <div class="text-sm">
+                                <p class="font-medium text-foreground">Admin</p>
+                                <p class="text-neutral-700">Administrador</p>
+                            </div>
+                        </div>
+                        <div id="editButtons">
+                            <button id="editBtn" class="btn btn-primary">
+                                Editar Cliente
+                            </button>
+                        </div>
+                        <div id="saveButtons" style="display: none;">
+                            <div class="flex gap-2">
+                                <button id="cancelBtn" class="btn btn-outline">
+                                    Cancelar
+                                </button>
+                                <button id="saveBtn" class="btn btn-primary">
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 p-6">
+                <div class="max-w-6xl mx-auto space-y-6">
+                    <!-- Client Header -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 bg-primary-10 rounded-full flex items-center justify-center">
+                                    <span id="clientInitials" class="text-primary text-xl font-semibold"></span>
+                                </div>
+                                <div class="flex-1">
+                                    <h1 id="clientName" class="text-2xl font-semibold text-foreground"></h1>
+                                    <p id="clientCompany" class="text-neutral-700"></p>
+                                    <p id="clientId" class="text-sm text-neutral-700 mt-1"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <div class="tab-list">
+                            <button class="tab-trigger active" data-tab="general">
+                                <i data-lucide="user" class="w-4 h-4 mr-2"></i>
+                                Información General
+                            </button>
+                            <button class="tab-trigger" data-tab="contact">
+                                <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>
+                                Contacto y Ubicación
+                            </button>
+                        </div>
+
+                        <!-- General Tab -->
+                        <div class="tab-content active" data-tab="general">
+                            <div class="space-y-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title flex items-center gap-2">
+                                            <i data-lucide="user" class="w-5 h-5 text-primary"></i>
+                                            Información del Cliente
+                                        </h3>
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Nombre Completo</label>
+                                                <input type="text" id="name" class="form-input" readonly>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Email</label>
+                                                <input type="email" id="email" class="form-input" readonly>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Empresa</label>
+                                                <input type="text" id="company" class="form-input" readonly>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Valor del Contrato</label>
+                                                <input type="text" id="contractValue" class="form-input" readonly>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Fecha de Incorporación</label>
+                                                <input type="date" id="joinDate" class="form-input" readonly>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Estado</label>
+                                                <select id="status" class="form-input" disabled>
+                                                    <option value="cliente-activo">Cliente Activo</option>
+                                                    <option value="cliente-inactivo">Cliente Inactivo</option>
+                                                    <option value="cliente-prospecto">Cliente Prospecto</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="mt-6">
+                                            <label class="text-sm font-medium text-foreground">Notas</label>
+                                            <textarea 
+                                                id="notes" 
+                                                class="form-input mt-2" 
+                                                rows="4" 
+                                                readonly
+                                                placeholder="Notas adicionales sobre el cliente..."
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Tab -->
+                        <div class="tab-content" data-tab="contact">
+                            <div class="space-y-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title flex items-center gap-2">
+                                            <i data-lucide="map-pin" class="w-5 h-5 text-primary"></i>
+                                            Contacto y Ubicación
+                                        </h3>
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Teléfono Principal</label>
+                                                <div class="relative">
+                                                    <i data-lucide="phone" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-700 w-4 h-4"></i>
+                                                    <input type="tel" id="phone" class="form-input pl-10" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Email de Contacto</label>
+                                                <div class="relative">
+                                                    <i data-lucide="mail" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-700 w-4 h-4"></i>
+                                                    <input type="email" id="contactEmail" class="form-input pl-10" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-2" style="grid-column: 1 / -1;">
+                                                <label class="text-sm font-medium text-foreground">Dirección Completa</label>
+                                                <div class="relative">
+                                                    <i data-lucide="map-pin" class="absolute left-3 top-3 text-neutral-700 w-4 h-4"></i>
+                                                    <textarea id="address" class="form-input pl-10" rows="3" readonly></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Ciudad</label>
+                                                <input type="text" id="city" class="form-input" readonly>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="text-sm font-medium text-foreground">Último Contacto</label>
+                                                <input type="date" id="lastContact" class="form-input" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed" style="top: 1rem; right: 1rem; z-index: 1000; display: none;">
+        <div class="card" style="padding: 1rem; background-color: var(--success); color: white; min-width: 300px;">
+            <div class="flex items-center gap-3">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                <div>
+                    <div class="font-medium" id="toast-title"></div>
+                    <div class="text-sm opacity-90" id="toast-description"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/client-detail.js"></script>
+</body>
+</html>
