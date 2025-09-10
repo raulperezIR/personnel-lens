@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Filter, Plus, Edit, Trash2, MoreHorizontal } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -132,12 +133,12 @@ const mockClients: Client[] = [
 ];
 
 const ClientsTable = () => {
+  const navigate = useNavigate();
   const [clients] = useState<Client[]>(mockClients);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingClient, setEditingClient] = useState<Client | null>(null);
   const itemsPerPage = 10;
 
   const getStatusBadge = (status: Client['status'], isActive: boolean) => {
@@ -183,13 +184,11 @@ const ClientsTable = () => {
   const paginatedClients = filteredClients.slice(startIndex, startIndex + itemsPerPage);
 
   const handleNewClient = () => {
-    setEditingClient(null);
     setIsModalOpen(true);
   };
 
   const handleEditClient = (client: Client) => {
-    setEditingClient(client);
-    setIsModalOpen(true);
+    navigate(`/clients/${client.id}`);
   };
 
   return (
@@ -358,7 +357,7 @@ const ClientsTable = () => {
       <ClientModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        client={editingClient}
+        client={null}
       />
     </div>
   );
