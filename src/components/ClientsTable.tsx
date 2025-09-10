@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, Plus, Edit, Trash2, MoreHorizontal } from "lucide-react";
+import { Search, Filter, Plus, Edit, Trash2, MoreHorizontal, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -132,11 +132,19 @@ const mockClients: Client[] = [
   }
 ];
 
+type SortField = keyof Client;
+type SortDirection = 'asc' | 'desc';
+
 const ClientsTable = () => {
   const navigate = useNavigate();
   const [clients] = useState<Client[]>(mockClients);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterSector, setFilterSector] = useState("all");
+  const [filterLocation, setFilterLocation] = useState("all");
+  const [filterContractType, setFilterContractType] = useState("all");
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 10;
@@ -166,6 +174,22 @@ const ClientsTable = () => {
     return null;
   };
 
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return <ArrowUpDown className="w-4 h-4 opacity-50" />;
+    return sortDirection === 'asc' 
+      ? <ArrowUp className="w-4 h-4 text-primary" />
+      : <ArrowDown className="w-4 h-4 text-primary" />;
+  };
+
   const filteredClients = clients.filter(client => {
     const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          client.clientId.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -176,7 +200,26 @@ const ClientsTable = () => {
                          (filterStatus === "active" && client.isActive) ||
                          (filterStatus === "inactive" && !client.isActive);
     
-    return matchesSearch && matchesStatus;
+    const matchesSector = filterSector === "all" || client.sector === filterSector;
+    const matchesLocation = filterLocation === "all" || client.location === filterLocation;
+    const matchesContractType = filterContractType === "all" || client.contractType === filterContractType;
+    
+    return matchesSearch && matchesStatus && matchesSector && matchesLocation && matchesContractType;
+  }).sort((a, b) => {
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      const comparison = aValue.localeCompare(bValue);
+      return sortDirection === 'asc' ? comparison : -comparison;
+    }
+    
+    if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
+      const comparison = aValue === bValue ? 0 : aValue ? 1 : -1;
+      return sortDirection === 'asc' ? comparison : -comparison;
+    }
+    
+    return 0;
   });
 
   const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
@@ -217,8 +260,8 @@ const ClientsTable = () => {
 
       {/* Filters */}
       <Card className="p-6 border-neutral-200">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
+        <div className="flex flex-col gap-4">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-700 w-4 h-4" />
             <Input
               placeholder="Buscar por nombre, ID, empresa o ciudad"
@@ -227,16 +270,54 @@ const ClientsTable = () => {
               className="pl-10 border-neutral-200 focus:border-primary focus:ring-primary/20"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-neutral-700" />
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-neutral-700" />
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="w-40 border-neutral-200">
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="active">Activos</SelectItem>
+                  <SelectItem value="inactive">Inactivos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Select value={filterSector} onValueChange={setFilterSector}>
               <SelectTrigger className="w-40 border-neutral-200">
-                <SelectValue placeholder="Filtrar (1)" />
+                <SelectValue placeholder="Sector" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="active">Activos</SelectItem>
-                <SelectItem value="inactive">Inactivos</SelectItem>
+                <SelectItem value="all">Todos los sectores</SelectItem>
+                <SelectItem value="Tecnología">Tecnología</SelectItem>
+                <SelectItem value="Construcción">Construcción</SelectItem>
+                <SelectItem value="Consultoría">Consultoría</SelectItem>
+                <SelectItem value="Comercio">Comercio</SelectItem>
+                <SelectItem value="Logística">Logística</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterLocation} onValueChange={setFilterLocation}>
+              <SelectTrigger className="w-40 border-neutral-200">
+                <SelectValue placeholder="Ubicación" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas las ubicaciones</SelectItem>
+                <SelectItem value="Madrid">Madrid</SelectItem>
+                <SelectItem value="Barcelona">Barcelona</SelectItem>
+                <SelectItem value="Sevilla">Sevilla</SelectItem>
+                <SelectItem value="Valencia">Valencia</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterContractType} onValueChange={setFilterContractType}>
+              <SelectTrigger className="w-40 border-neutral-200">
+                <SelectValue placeholder="Contrato" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los contratos</SelectItem>
+                <SelectItem value="Básico">Básico</SelectItem>
+                <SelectItem value="Estándar">Estándar</SelectItem>
+                <SelectItem value="Premium">Premium</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -251,15 +332,51 @@ const ClientsTable = () => {
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-200">
-              <TableHead className="text-neutral-900 font-medium">CONTACTO</TableHead>
-              <TableHead className="text-neutral-900 font-medium">ID CLIENTE</TableHead>
-              <TableHead className="text-neutral-900 font-medium">EMPRESA</TableHead>
-              <TableHead className="text-neutral-900 font-medium">SECTOR</TableHead>
-              <TableHead className="text-neutral-900 font-medium">UBICACIÓN</TableHead>
-              <TableHead className="text-neutral-900 font-medium">ACTIVO</TableHead>
-              <TableHead className="text-neutral-900 font-medium">CONTRATO</TableHead>
-              <TableHead className="text-neutral-900 font-medium">ÚLTIMO CONTACTO</TableHead>
-              <TableHead className="text-neutral-900 font-medium">ESTADO</TableHead>
+              <TableHead className="text-neutral-900 font-medium">
+                <Button variant="ghost" className="p-0 font-medium text-neutral-900 hover:text-primary" onClick={() => handleSort('name')}>
+                  CONTACTO {getSortIcon('name')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-neutral-900 font-medium">
+                <Button variant="ghost" className="p-0 font-medium text-neutral-900 hover:text-primary" onClick={() => handleSort('clientId')}>
+                  ID CLIENTE {getSortIcon('clientId')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-neutral-900 font-medium">
+                <Button variant="ghost" className="p-0 font-medium text-neutral-900 hover:text-primary" onClick={() => handleSort('company')}>
+                  EMPRESA {getSortIcon('company')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-neutral-900 font-medium">
+                <Button variant="ghost" className="p-0 font-medium text-neutral-900 hover:text-primary" onClick={() => handleSort('sector')}>
+                  SECTOR {getSortIcon('sector')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-neutral-900 font-medium">
+                <Button variant="ghost" className="p-0 font-medium text-neutral-900 hover:text-primary" onClick={() => handleSort('location')}>
+                  UBICACIÓN {getSortIcon('location')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-neutral-900 font-medium">
+                <Button variant="ghost" className="p-0 font-medium text-neutral-900 hover:text-primary" onClick={() => handleSort('isActive')}>
+                  ACTIVO {getSortIcon('isActive')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-neutral-900 font-medium">
+                <Button variant="ghost" className="p-0 font-medium text-neutral-900 hover:text-primary" onClick={() => handleSort('contractType')}>
+                  CONTRATO {getSortIcon('contractType')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-neutral-900 font-medium">
+                <Button variant="ghost" className="p-0 font-medium text-neutral-900 hover:text-primary" onClick={() => handleSort('lastContact')}>
+                  ÚLTIMO CONTACTO {getSortIcon('lastContact')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-neutral-900 font-medium">
+                <Button variant="ghost" className="p-0 font-medium text-neutral-900 hover:text-primary" onClick={() => handleSort('status')}>
+                  ESTADO {getSortIcon('status')}
+                </Button>
+              </TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>

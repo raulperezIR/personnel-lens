@@ -8,7 +8,23 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, User, Briefcase, MapPin, Phone, Mail, Globe, Calendar } from "lucide-react";
+import { 
+  ArrowLeft, 
+  User, 
+  Briefcase, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Globe, 
+  Calendar,
+  Menu,
+  Bell,
+  Users,
+  UserCheck,
+  BarChart3,
+  Settings,
+  LogOut 
+} from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Client {
@@ -90,6 +106,14 @@ const ClientDetail = () => {
   const [client, setClient] = useState<Client | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Client | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
+
+  const sidebarItems = [
+    { icon: Users, label: "Clientes", path: "/employees", active: true },
+    { icon: UserCheck, label: "Empleados", path: "/employees-old" },
+    { icon: BarChart3, label: "Reportes", path: "/reports" },
+    { icon: Settings, label: "Configuración", path: "/settings" },
+  ];
 
   useEffect(() => {
     if (id) {
@@ -156,50 +180,110 @@ const ClientDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <div className="bg-card border-b border-neutral-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/employees")}
-              className="text-neutral-700"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Volver
-            </Button>
-            <div>
-              <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                <User className="w-5 h-5 text-primary" />
-                Ficha de Cliente
-              </h1>
-              <p className="text-sm text-neutral-700">{client.clientId}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {getStatusBadge(client.status, client.isActive)}
-            {!isEditing ? (
-              <Button onClick={() => setIsEditing(true)} className="bg-primary hover:bg-primary-600">
-                Editar Cliente
-              </Button>
-            ) : (
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleCancel}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleSave} className="bg-primary hover:bg-primary-600">
-                  Guardar
-                </Button>
+    <div className="min-h-screen bg-neutral-50 flex">
+      {/* Sidebar */}
+      <div className={`bg-card border-r border-neutral-200 transition-all duration-300 ${
+        collapsed ? 'w-16' : 'w-64'
+      }`}>
+        <div className="p-4">
+          <div className="flex items-center gap-2 mb-8">
+            {!collapsed && (
+              <div>
+                <h1 className="text-lg font-semibold text-primary">ERP Clientes</h1>
+                <p className="text-xs text-neutral-700">Sistema de gestión</p>
               </div>
             )}
+          </div>
+          
+          <nav className="space-y-2">
+            {sidebarItems.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => navigate(item.path)}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  item.active
+                    ? 'bg-primary/10 text-primary border border-primary/20'
+                    : 'text-neutral-700 hover:bg-neutral-50'
+                }`}
+              >
+                <item.icon className="w-4 h-4 flex-shrink-0" />
+                {!collapsed && <span>{item.label}</span>}
+              </button>
+            ))}
+          </nav>
+          
+          <div className="absolute bottom-4 left-4 right-4">
+            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">
+              <LogOut className="w-4 h-4 flex-shrink-0" />
+              {!collapsed && <span>Cerrar Sesión</span>}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6 max-w-6xl mx-auto">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="bg-card border-b border-neutral-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCollapsed(!collapsed)}
+                className="text-neutral-700"
+              >
+                <Menu className="w-4 h-4" />
+              </Button>
+              <div>
+                <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
+                  <User className="w-5 h-5 text-primary" />
+                  Ficha de Cliente
+                </h1>
+                <p className="text-sm text-neutral-700">{client.clientId}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/employees")}
+                className="text-neutral-700"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Volver
+              </Button>
+              {getStatusBadge(client.status, client.isActive)}
+              <Bell className="w-5 h-5 text-neutral-700 cursor-pointer" />
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="w-4 h-4 text-primary" />
+                </div>
+                <div className="text-sm">
+                  <p className="font-medium text-foreground">Admin</p>
+                  <p className="text-neutral-700">Administrador</p>
+                </div>
+              </div>
+              {!isEditing ? (
+                <Button onClick={() => setIsEditing(true)} className="bg-primary hover:bg-primary-600">
+                  Editar Cliente
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleCancel}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={handleSave} className="bg-primary hover:bg-primary-600">
+                    Guardar
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 max-w-6xl mx-auto w-full">
         <Tabs defaultValue="general" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="general">Datos Generales</TabsTrigger>
@@ -479,6 +563,7 @@ const ClientDetail = () => {
             </Card>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </div>
   );
