@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Clientes - Gestión de Clientes</title>
+    <meta name="description" content="Sistema de gestión de clientes y CRM para intranet B2B">
+    <meta name="author" content="IR Soluciones">
+
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Local Utilities (jQuery replacement) -->
+    <script src="js/utils.js"></script>
+</head>
+<body>
+    <div class="min-h-screen flex items-center justify-center bg-neutral-50" style="padding: 1rem;">
+        <div class="card max-w-420 w-full shadow-lg" style="border: none;">
+            <!-- Card Header -->
+            <div class="card-header text-center" style="padding-bottom: 2rem; padding-top: 3rem;">
+                <div class="flex items-center justify-center mb-6">
+                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                        <span class="text-primary-foreground font-semibold text-xl">CT</span>
+                    </div>
+                </div>
+                <h1 class="text-2xl font-semibold text-foreground">ERP Clientes</h1>
+                <p class="text-neutral-700 text-sm mt-2">Accede a tu intranet corporativa</p>
+            </div>
+
+            <!-- Card Content -->
+            <div class="card-content" style="padding-left: 2rem; padding-right: 2rem; padding-bottom: 3rem;">
+                <form id="loginForm" class="space-y-6">
+                    <div class="space-y-2">
+                        <label for="email" class="text-sm font-medium text-foreground">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="tu@empresa.com"
+                            class="form-input h-11"
+                            required
+                        />
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="password" class="text-sm font-medium text-foreground">
+                            Contraseña
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="••••••••"
+                            class="form-input h-11"
+                            required
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                id="remember"
+                                name="remember"
+                                class="checkbox"
+                            />
+                            <label for="remember" class="text-sm text-neutral-700 cursor-pointer">
+                                Recordarme
+                            </label>
+                        </div>
+                        <a href="#" class="text-sm text-primary hover:text-primary-600 transition-colors">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        class="btn btn-primary w-full h-11 font-medium"
+                    >
+                        Iniciar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed" style="top: 1rem; right: 1rem; z-index: 1000; display: none;">
+        <div class="card" style="padding: 1rem; background-color: var(--success); color: white; min-width: 300px;">
+            <div class="flex items-center gap-3">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                <div>
+                    <div class="font-medium" id="toast-title">Acceso exitoso</div>
+                    <div class="text-sm opacity-90" id="toast-description">Bienvenido a ERP Clientes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function() {
+            // Handle form submission
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Show toast notification
+                showToast('Acceso exitoso', 'Bienvenido a ERP Clientes');
+                
+                // Redirect to clients page after a short delay
+                setTimeout(function() {
+                    window.location.href = 'clients.html';
+                }, 1500);
+            });
+        });
+
+        function showToast(title, description) {
+            $('#toast-title').text(title);
+            $('#toast-description').text(description);
+            $('#toast').fadeIn(300);
+            
+            // Auto hide after 3 seconds
+            setTimeout(function() {
+                $('#toast').fadeOut(300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

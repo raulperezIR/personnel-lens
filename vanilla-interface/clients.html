@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - ERP Clientes</title>
+    <meta name="description" content="Sistema de gestión de clientes y CRM para intranet B2B">
+
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Local Utilities -->
+    <script src="js/utils.js"></script>
+</head>
+<body>
+    <div class="flex h-screen bg-neutral-50">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-card border-r border-neutral-200 transition-all duration-300">
+            <div class="p-4">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center" style="flex-shrink: 0;">
+                        <span class="text-primary-foreground font-semibold text-sm">CT</span>
+                    </div>
+                    <div class="sidebar-text">
+                        <h1 class="font-semibold text-foreground">IR Soluciones</h1>
+                        <p class="text-xs text-neutral-700">ERP Clientes</p>
+                    </div>
+                </div>
+                
+                <nav class="space-y-2">
+                    <button class="nav-item" data-page="dashboard">
+                        <i data-lucide="layout-dashboard" class="nav-icon"></i>
+                        <span class="sidebar-text">Dashboard</span>
+                    </button>
+                    <button class="nav-item active" data-page="clients">
+                        <i data-lucide="users" class="nav-icon"></i>
+                        <span class="sidebar-text">Clientes</span>
+                    </button>
+                    <button class="nav-item" data-page="reports">
+                        <i data-lucide="clock" class="nav-icon"></i>
+                        <span class="sidebar-text">Reportes</span>
+                    </button>
+                    <button class="nav-item" data-page="files">
+                        <i data-lucide="file-text" class="nav-icon"></i>
+                        <span class="sidebar-text">Informes</span>
+                    </button>
+                    <button class="nav-item" data-page="settings">
+                        <i data-lucide="settings" class="nav-icon"></i>
+                        <span class="sidebar-text">Configuración</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="absolute bottom-4 left-4 right-4">
+                <button class="nav-item" id="logoutBtn">
+                    <i data-lucide="log-out" class="nav-icon"></i>
+                    <span class="sidebar-text">Cerrar Sesión</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Header -->
+            <header class="bg-card border-b border-neutral-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <button id="sidebarToggle" class="btn btn-ghost btn-sm text-neutral-700">
+                            <i data-lucide="menu" class="w-5 h-5"></i>
+                        </button>
+                        <div class="text-sm text-neutral-700">
+                            <span class="text-primary cursor-pointer">Miembros</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <button class="btn btn-ghost btn-sm text-neutral-700">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                        </button>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-primary-10 rounded-full flex items-center justify-center">
+                                <span class="text-primary text-sm font-medium">AG</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-foreground">Ana García</p>
+                                <p class="text-xs text-neutral-700">Administradora</p>
+                            </div>
+                            <i data-lucide="settings" class="w-4 h-4 text-neutral-700 cursor-pointer"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 p-6 overflow-auto">
+                <!-- Search and Filters -->
+                <div class="card p-6 border-neutral-200 mb-6">
+                    <div class="flex flex-col gap-4">
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-700 w-4 h-4"></i>
+                            <input
+                                type="text"
+                                id="searchInput"
+                                placeholder="Buscar por nombre, ID, empresa o ciudad"
+                                class="form-input pl-10"
+                            />
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="filter" class="w-4 h-4 text-neutral-700"></i>
+                                <select id="statusFilter" class="form-input w-40">
+                                    <option value="all">Todos</option>
+                                    <option value="cliente-activo">Activos</option>
+                                    <option value="cliente-inactivo">Inactivos</option>
+                                    <option value="cliente-prospecto">Prospectos</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label class="text-sm text-neutral-700">Elementos por página:</label>
+                                <select id="itemsPerPage" class="form-input" style="width: auto;">
+                                    <option value="10">10</option>
+                                    <option value="25" selected>25</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <button class="btn btn-primary" id="addClientBtn">
+                                    <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                                    Nuevo Cliente
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clients Table -->
+                <div class="card border-neutral-200">
+                    <div class="overflow-auto">
+                        <table class="table" id="clientsTable">
+                            <thead>
+                                <tr>
+                                    <th class="cursor-pointer" data-sort="name">
+                                        <div class="flex items-center gap-2">
+                                            Nombre
+                                            <i data-lucide="arrow-up-down" class="w-4 h-4"></i>
+                                        </div>
+                                    </th>
+                                    <th class="cursor-pointer" data-sort="clientId">
+                                        <div class="flex items-center gap-2">
+                                            ID Cliente
+                                            <i data-lucide="arrow-up-down" class="w-4 h-4"></i>
+                                        </div>
+                                    </th>
+                                    <th>Empresa</th>
+                                    <th>Estado</th>
+                                    <th>Ubicación</th>
+                                    <th>Último Contacto</th>
+                                    <th class="text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientsTableBody">
+                                <!-- Table content will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between mt-4">
+                    <div class="text-sm text-neutral-700" id="paginationInfo">
+                        Mostrando 1-25 de 47 resultados
+                    </div>
+                    <div class="flex items-center gap-2" id="paginationControls">
+                        <button class="btn btn-outline btn-sm" id="prevPage" disabled>
+                            <i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i>
+                            Anterior
+                        </button>
+                        <button class="btn btn-outline btn-sm" id="nextPage">
+                            Siguiente
+                            <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed" style="top: 1rem; right: 1rem; z-index: 1000; display: none;">
+        <div class="card" style="padding: 1rem; background-color: var(--success); color: white; min-width: 300px;">
+            <div class="flex items-center gap-3">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                <div>
+                    <div class="font-medium" id="toast-title"></div>
+                    <div class="text-sm opacity-90" id="toast-description"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/clients.js"></script>
+</body>
+</html>
