@@ -19,7 +19,7 @@ const Employees = () => {
   const sidebarItems = [
     { icon: LayoutDashboard, label: "Dashboard", active: false },
     { icon: Users, label: "Clientes", active: true },
-    { icon: Clock, label: "Control Tiempos", active: false },
+    { icon: Clock, label: "Reportes", active: false },
     { icon: FileText, label: "Informes", active: false },
     { icon: Settings, label: "Configuración", active: false },
   ];
@@ -38,7 +38,7 @@ const Employees = () => {
             {!isSidebarCollapsed && (
               <div>
                 <h1 className="font-semibold text-foreground">IR Soluciones</h1>
-                <p className="text-xs text-neutral-700">Control Tiempos</p>
+                <p className="text-xs text-neutral-700">ERP Clientes</p>
               </div>
             )}
           </div>

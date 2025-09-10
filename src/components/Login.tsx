@@ -18,7 +18,7 @@ const Login = () => {
     e.preventDefault();
     toast({
       title: "Acceso exitoso",
-      description: "Bienvenido a Control Tiempos",
+      description: "Bienvenido a ERP Clientes",
     });
     // Redirect to employees page
     navigate("/employees");
@@ -33,7 +33,7 @@ const Login = () => {
               <span className="text-primary-foreground font-semibold text-xl">CT</span>
             </div>
           </div>
-          <h1 className="text-2xl font-semibold text-foreground">Control Tiempos</h1>
+          <h1 className="text-2xl font-semibold text-foreground">ERP Clientes</h1>
           <p className="text-neutral-700 text-sm mt-2">Accede a tu intranet corporativa</p>
         </CardHeader>
         <CardContent className="px-8 pb-12">
