@@ -1,0 +1,7 @@
+services:
+  personnel-lens:
+    build: .
+    ports:
+      - "8080:80"
+    container_name: personnel-lens-app
+    restart: unless-stopped
