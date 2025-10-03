@@ -23,9 +23,24 @@ import {
   UserCheck,
   BarChart3,
   Settings,
-  LogOut 
+  LogOut,
+  CreditCard,
+  Pencil,
+  Trash2,
+  Plus
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { SubscriptionModal, Subscription } from "@/components/SubscriptionModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Client {
   id: string;
@@ -50,6 +65,55 @@ interface Client {
   alternativePhone?: string;
   notes?: string;
 }
+
+// Mock subscriptions data
+const mockSubscriptions: Subscription[] = [
+  {
+    id: "1",
+    platform: "Netflix",
+    plan: "Plan Premium",
+    startDate: "2024-03-01",
+    endDate: "2026-03-01",
+    amount: "15,99",
+    status: "activa"
+  },
+  {
+    id: "2",
+    platform: "HBO Max",
+    plan: "Plan Estándar",
+    startDate: "2024-01-15",
+    endDate: "2026-07-15",
+    amount: "9,99",
+    status: "activa"
+  },
+  {
+    id: "3",
+    platform: "Disney+",
+    plan: "Plan Anual",
+    startDate: "2023-12-10",
+    endDate: "2025-12-10",
+    amount: "8,99",
+    status: "activa"
+  },
+  {
+    id: "4",
+    platform: "Spotify Premium",
+    plan: "Plan Individual",
+    startDate: "2023-05-05",
+    endDate: "2024-05-05",
+    amount: "10,99",
+    status: "caducada"
+  },
+  {
+    id: "5",
+    platform: "YouTube Premium",
+    plan: "Plan Familiar",
+    startDate: "2024-02-20",
+    endDate: "2024-08-20",
+    amount: "11,99",
+    status: "caducada"
+  }
+];
 
 // Mock data - same as in ClientsTable
 const mockClients: Client[] = [
@@ -107,6 +171,11 @@ const ClientDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Client | null>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>(mockSubscriptions);
+  const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
+  const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [subscriptionToDelete, setSubscriptionToDelete] = useState<string | null>(null);
 
   const sidebarItems = [
     { icon: Users, label: "Clientes", path: "/employees", active: true },
@@ -139,6 +208,42 @@ const ClientDetail = () => {
   const handleCancel = () => {
     setFormData(client);
     setIsEditing(false);
+  };
+
+  const handleSaveSubscription = (subscription: Subscription) => {
+    if (editingSubscription) {
+      setSubscriptions(subscriptions.map(s => s.id === subscription.id ? subscription : s));
+    } else {
+      setSubscriptions([...subscriptions, subscription]);
+    }
+    setEditingSubscription(null);
+  };
+
+  const handleEditSubscription = (subscription: Subscription) => {
+    setEditingSubscription(subscription);
+    setSubscriptionModalOpen(true);
+  };
+
+  const handleDeleteSubscription = (id: string) => {
+    setSubscriptionToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteSubscription = () => {
+    if (subscriptionToDelete) {
+      setSubscriptions(subscriptions.filter(s => s.id !== subscriptionToDelete));
+      toast({
+        title: "Suscripción eliminada",
+        description: "La suscripción se ha eliminado correctamente."
+      });
+    }
+    setDeleteDialogOpen(false);
+    setSubscriptionToDelete(null);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
   const getStatusBadge = (status: Client['status'], isActive: boolean) => {
@@ -285,10 +390,11 @@ const ClientDetail = () => {
         {/* Content */}
         <div className="p-6 max-w-6xl mx-auto w-full">
         <Tabs defaultValue="general" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="general">Datos Generales</TabsTrigger>
             <TabsTrigger value="commercial">Información Comercial</TabsTrigger>
             <TabsTrigger value="contact">Contacto y Ubicación</TabsTrigger>
+            <TabsTrigger value="subscriptions">Suscripciones</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-6">
@@ -562,9 +668,142 @@ const ClientDetail = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="subscriptions" className="space-y-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-primary" />
+                  Suscripciones
+                </CardTitle>
+                <Button 
+                  onClick={() => {
+                    setEditingSubscription(null);
+                    setSubscriptionModalOpen(true);
+                  }}
+                  className="bg-primary hover:bg-primary-600"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nueva Suscripción
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="border-b border-neutral-200">
+                      <tr>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-neutral-700 uppercase">
+                          Plataforma
+                        </th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-neutral-700 uppercase">
+                          Inicio
+                        </th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-neutral-700 uppercase">
+                          Caducidad
+                        </th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-neutral-700 uppercase">
+                          Importe
+                        </th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-neutral-700 uppercase">
+                          Estado
+                        </th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-neutral-700 uppercase">
+                          Acciones
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {subscriptions.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="text-center py-8 text-neutral-700">
+                            No hay suscripciones registradas
+                          </td>
+                        </tr>
+                      ) : (
+                        subscriptions.map((subscription) => (
+                          <tr key={subscription.id} className="border-b border-neutral-100 hover:bg-neutral-50">
+                            <td className="py-4 px-4">
+                              <div className="flex flex-col">
+                                <span className="font-medium text-foreground">{subscription.platform}</span>
+                                <span className="text-sm text-neutral-700">{subscription.plan}</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-neutral-700">
+                              {formatDate(subscription.startDate)}
+                            </td>
+                            <td className="py-4 px-4 text-neutral-700">
+                              {formatDate(subscription.endDate)}
+                            </td>
+                            <td className="py-4 px-4 text-primary font-medium">
+                              {subscription.amount} €
+                            </td>
+                            <td className="py-4 px-4">
+                              {subscription.status === 'activa' ? (
+                                <Badge className="bg-success/10 text-success border-success/20">
+                                  Activa
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-danger/10 text-danger border-danger/20">
+                                  Caducada
+                                </Badge>
+                              )}
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditSubscription(subscription)}
+                                  className="text-primary hover:text-primary hover:bg-primary/10"
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteSubscription(subscription.id)}
+                                  className="text-danger hover:text-danger hover:bg-danger/10"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
         </div>
       </div>
+
+      <SubscriptionModal
+        open={subscriptionModalOpen}
+        onOpenChange={setSubscriptionModalOpen}
+        subscription={editingSubscription}
+        onSave={handleSaveSubscription}
+      />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La suscripción será eliminada permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteSubscription} className="bg-danger hover:bg-danger/90">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
